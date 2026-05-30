@@ -58,11 +58,15 @@ export function spring(config: SpringControllerConfig): SpringHandle {
   let frame: number | null = null;
   let running = false;
 
+  // Elapsed seconds since the active spring started, clamped to >= 0 so a
+  // non-monotonic injected clock can't feed negative time into the solver.
+  const elapsed = (): number => Math.max(0, (now() - startTime) / 1000);
+
   // Current value/velocity — sampled live from the solver while running so that
   // interruptions and reads are exact even between frames.
   function sample(): { value: number; velocity: number } {
     if (running && solver) {
-      const s = solver.at((now() - startTime) / 1000);
+      const s = solver.at(elapsed());
       return { value: s.value, velocity: s.velocity };
     }
     return { value, velocity };
@@ -79,7 +83,7 @@ export function spring(config: SpringControllerConfig): SpringHandle {
     frame = null;
     if (!running || !solver) return;
     const active = solver;
-    const s = active.at((now() - startTime) / 1000);
+    const s = active.at(elapsed());
     value = s.value;
     velocity = s.velocity;
     // Terminal when settled, or if the trajectory went non-finite (degenerate

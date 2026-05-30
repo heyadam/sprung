@@ -237,4 +237,32 @@ describe("spring() controller", () => {
       expect(handle.get().value).toBe(5);
     }).not.toThrow();
   });
+
+  it("clamps elapsed time to >= 0 so a backward clock step can't diverge the solver", () => {
+    let clock = 1000;
+    let pending: ((time: number) => void) | null = null;
+    const handle = spring({
+      from: 0,
+      stiffness: 200,
+      damping: 20,
+      mass: 1,
+      now: () => clock,
+      raf: (cb) => {
+        pending = cb;
+        return 1;
+      },
+      caf: () => {
+        pending = null;
+      },
+      onUpdate: () => {},
+    });
+
+    handle.set(100); // startTime captured at clock = 1000
+    clock = 500; // clock jumps backward — naive elapsed would be negative
+    const v = handle.get();
+
+    expect(Number.isFinite(v.value)).toBe(true);
+    expect(v.value).toBeCloseTo(0, 6); // elapsed clamped to 0 → at(0) → `from`
+    expect(pending).not.toBeNull(); // a frame is still scheduled
+  });
 });
