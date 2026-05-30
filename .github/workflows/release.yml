@@ -33,7 +33,11 @@ jobs:
           publish: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Classic automation token. Alternatively, configure npm "trusted
-          # publishing" (OIDC) and drop this — provenance still works via id-token.
+          # `NPM_TOKEN` makes changesets/action publish with the token directly.
+          # Without it, the action sees OIDC available and attempts npm "trusted
+          # publishing", which isn't configured for a brand-new package — its fallback
+          # then demands a 2FA OTP that CI can't provide. `NODE_AUTH_TOKEN` backs the
+          # .npmrc that actions/setup-node wrote. Provenance still attaches via id-token.
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"
