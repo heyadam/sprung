@@ -33,11 +33,8 @@ jobs:
           publish: npm run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # `NPM_TOKEN` makes changesets/action publish with the token directly.
-          # Without it, the action sees OIDC available and attempts npm "trusted
-          # publishing", which isn't configured for a brand-new package — its fallback
-          # then demands a 2FA OTP that CI can't provide. `NODE_AUTH_TOKEN` backs the
-          # .npmrc that actions/setup-node wrote. Provenance still attaches via id-token.
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Auth is via npm OIDC "trusted publishing" (configured on npmjs.com for
+          # heyadam/sprung + release.yml), so no token is needed: changesets/action
+          # exchanges the `id-token: write` OIDC token for a short-lived publish
+          # credential, and provenance is generated automatically.
           NPM_CONFIG_PROVENANCE: "true"
