@@ -72,6 +72,12 @@
   ],
   "author": "heyadam <me@heyadam.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heyadam/sprung.git"
+  },
+  "homepage": "https://github.com/heyadam/sprung#readme",
+  "bugs": "https://github.com/heyadam/sprung/issues",
   "peerDependencies": {
     "react": ">=17.0.0"
   },
