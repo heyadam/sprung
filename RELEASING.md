@@ -12,14 +12,16 @@
       match** the GitHub repository the release workflow runs in, or publish fails.
 - [ ] You have an npm account with publish rights and 2FA configured.
 
-## 1. Push to GitHub
+## 1. GitHub repo — ✅ done
 
-```bash
-git remote add origin git@github.com:<you>/sprung.git
-git push -u origin main
-```
-
+Live at **https://github.com/heyadam/sprung** (public), `main` pushed, **CI green**.
 CI (`.github/workflows/ci.yml`) runs lint → typecheck → test → type-tests → build → publint + attw → size on every push/PR.
+
+**One-time setting for the release flow:** enable **Settings → Actions → General →
+"Allow GitHub Actions to create and approve pull requests."** Without it, the Changesets
+workflow can't open the "Version Packages" PR and fails at that step — *harmlessly* (it
+never publishes; it only pushes a `changeset-release/main` branch). With it enabled, each
+push to `main` that contains a changeset opens/updates the version PR.
 
 ## 2. Authentication (pick one)
 
