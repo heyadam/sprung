@@ -2,7 +2,7 @@
 
 > Tiny, framework-agnostic physics spring animation — a closed-form damped harmonic oscillator with velocity-continuous interruption.
 
-`sprung` models motion as a real spring (mass · stiffness · damping) and solves it **analytically**, so it's frame-rate independent and exact at any timestep. Retarget mid-flight and the velocity carries over with no jump — the thing that makes spring UIs feel alive. Think in physics (`stiffness`/`damping`/`mass`) or in feel (`duration`/`bounce`).
+`sprung` (published on npm as **`sprungdesign`**) models motion as a real spring (mass · stiffness · damping) and solves it **analytically**, so it's frame-rate independent and exact at any timestep. Retarget mid-flight and the velocity carries over with no jump — the thing that makes spring UIs feel alive. Think in physics (`stiffness`/`damping`/`mass`) or in feel (`duration`/`bounce`).
 
 - **Zero dependencies**, framework-agnostic core. SSR-safe — no DOM touched at import.
 - Dual **ESM + CJS**, complete types, tree-shakeable (`sideEffects: false`).
@@ -10,7 +10,7 @@
 - Thin **React** adapter (`useSpring`); more adapters can be layered on without touching the core.
 
 ```bash
-npm install sprung
+npm install sprungdesign
 ```
 
 ## Quick start
@@ -18,7 +18,7 @@ npm install sprung
 ### React
 
 ```tsx
-import { useSpring } from "sprung/react";
+import { useSpring } from "sprungdesign/react";
 
 function Box({ open }: { open: boolean }) {
   const x = useSpring(open ? 200 : 0, { stiffness: 320, damping: 14 });
@@ -31,7 +31,7 @@ function Box({ open }: { open: boolean }) {
 ### Vanilla / any framework
 
 ```ts
-import { spring } from "sprung";
+import { spring } from "sprungdesign";
 
 const handle = spring({
   stiffness: 180,
@@ -48,7 +48,7 @@ el.addEventListener("click", () => handle.set(300));
 ## Feel instead of physics
 
 ```ts
-import { fromFeel, spring } from "sprung";
+import { fromFeel, spring } from "sprungdesign";
 
 // bounce ∈ [-1, 1]:  >0 bouncy · 0 critical (no overshoot) · <0 sluggish
 // (the extremes are clamped to a settling range, so ±1 stay usable, not degenerate)
@@ -58,7 +58,7 @@ const handle = spring({ ...fromFeel({ duration: 0.5, bounce: 0.3 }), onUpdate })
 Named presets are included too:
 
 ```ts
-import { presets, spring } from "sprung";
+import { presets, spring } from "sprungdesign";
 
 spring({ ...presets.bouncy, onUpdate }); // gentle · bouncy · stiff · lazy
 ```
@@ -99,7 +99,7 @@ Maps designer-friendly inputs to physics constants. `duration` sets the natural 
 
 `gentle`, `bouncy`, `stiff`, `lazy` — ready-made `{ stiffness, damping, mass }` configs.
 
-### `useSpring(target, config?) → number`  (`sprung/react`)
+### `useSpring(target, config?) → number`  (`sprungdesign/react`)
 
 See [Quick start](#react). `config` is read once when the hook mounts.
 

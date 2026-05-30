@@ -9,8 +9,8 @@
     "skipLibCheck": true,
     "noEmit": true,
     "paths": {
-      "sprung": ["../../src/index.ts"],
-      "sprung/react": ["../../src/react.ts"]
+      "sprungdesign": ["../../src/index.ts"],
+      "sprungdesign/react": ["../../src/react.ts"]
     }
   },
   "include": ["src", "vite.config.ts"]

@@ -1,6 +1,6 @@
 import { type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createSpring, fromFeel, presets, spring, type SpringHandle } from "sprung";
-import { useSpring } from "sprung/react";
+import { createSpring, fromFeel, presets, spring, type SpringHandle } from "sprungdesign";
+import { useSpring } from "sprungdesign/react";
 
 const ACCENT = "#ff7a18";
 type Mode = "physics" | "feel";

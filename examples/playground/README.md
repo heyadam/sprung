@@ -7,7 +7,7 @@ The `spring.tuner` demo, rebuilt entirely on the published `sprung` API:
 - the controls use `fromFeel` and `presets`,
 - the bottom strip uses the `useSpring` React hook.
 
-It resolves `sprung` / `sprung/react` to the library source via a Vite alias, so no build or publish step is needed.
+It resolves `sprungdesign` / `sprungdesign/react` to the library source via a Vite alias, so no build or publish step is needed.
 
 ```bash
 npm install

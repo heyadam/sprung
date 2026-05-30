@@ -6,7 +6,7 @@
 
 ## 0. Before you publish — confirm these
 
-- [ ] **Package name** `sprung` is still free on npm (`npm view sprung` → 404). It was available when scaffolded.
+- [ ] **Package name** is `sprungdesign` (the bare name `sprung` is rejected by npm's name-similarity policy). `npm view sprungdesign` → 404 confirms it's free.
 - [ ] **Repository URL** in `package.json` (`repository`, `homepage`, `bugs`) currently points at
       `github.com/heyadam/sprung` — **replace with the real org/repo**. npm **provenance requires this to
       match** the GitHub repository the release workflow runs in, or publish fails.
@@ -58,8 +58,8 @@ git push --follow-tags
 
 ## 5. After publishing
 
-- [ ] `npm view sprung` shows `0.1.0`; the npm page shows the **provenance** badge.
-- [ ] Smoke test: `npm i sprung` in a scratch project; import `sprung` and `sprung/react`.
+- [ ] `npm view sprungdesign` shows `0.1.0`; the npm page shows the **provenance** badge.
+- [ ] Smoke test: `npm i sprungdesign` in a scratch project; import `sprungdesign` and `sprungdesign/react`.
 - [ ] Re-run `npx @arethetypeswrong/cli sprung` (against the published package) → all green.
 
 ## Quick reference

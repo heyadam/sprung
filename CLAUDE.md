@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-`sprung` is a published-to-be npm library: a zero-dependency, framework-agnostic spring-animation engine (a closed-form damped harmonic oscillator) with a thin React adapter. Single package, two entry points: `sprung` (core) and `sprung/react`.
+`sprung` is a published-to-be npm library: a zero-dependency, framework-agnostic spring-animation engine (a closed-form damped harmonic oscillator) with a thin React adapter. Single package (published on npm as `sprungdesign`), two entry points: `sprungdesign` (core) and `sprungdesign/react`.
 
 ## Commands
 
@@ -35,7 +35,7 @@ Three layers, strictly separated:
 
 2. **`src/controller.ts` — `spring()`**: the live, interruptible controller that drives `requestAnimationFrame`. The headline feature lives here: **velocity-continuous interruption** — `set(target)` reads the current value+velocity and builds a *fresh* solver anchored there, so continuity is structural, not approximated. `tick()` schedules the next frame *before* calling `onUpdate` (so a throwing callback can't strand the loop) and terminates on `done` or a non-finite sample.
 
-3. **`src/react.ts` — `useSpring()`** → the `sprung/react` entry. Wraps the controller; SSR-safe; reduced-motion snaps; velocity-continuous retarget on `target` change.
+3. **`src/react.ts` — `useSpring()`** → the `sprungdesign/react` entry. Wraps the controller; SSR-safe; reduced-motion snaps; velocity-continuous retarget on `target` change.
 
 `src/index.ts` is the core barrel and **must never import `src/react.ts`** — that's what keeps the core React-free. The two are separate tsdown entries.
 
@@ -57,5 +57,5 @@ Per-file environment is set by a directive comment: default is `node`; `test/rea
 ## Gotchas
 
 - **`npm ci` cross-platform lockfile**: incremental `npm install -D` can leave `package-lock.json` missing the wasm-fallback binding's optional deps (`@emnapi/*`), which `npm ci` rejects on Linux CI. If CI fails at install, regenerate with a clean `rm -rf node_modules package-lock.json && npm install` (a full re-resolution records the foreign-platform entries).
-- **`examples/playground`** is a standalone Vite app that resolves `sprung`/`sprung/react` to `../../src` via aliases; its `vite.config.ts` must keep `resolve.dedupe: ["react", "react-dom"]` or you get a duplicate-React "null dispatcher" crash (the library source's own `react` devDep is a second copy).
+- **`examples/playground`** is a standalone Vite app that resolves `sprungdesign`/`sprungdesign/react` to `../../src` via aliases; its `vite.config.ts` must keep `resolve.dedupe: ["react", "react-dom"]` or you get a duplicate-React "null dispatcher" crash (the library source's own `react` devDep is a second copy).
 - **`spring-tuner.jsx`** at the repo root is the reference artifact (excluded from Biome, tsconfig, and the published package); the live demo is `examples/playground`.
