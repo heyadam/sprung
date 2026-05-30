@@ -1,0 +1,256 @@
+:root {
+  --bg: #0a0a0a;
+  --panel: #171717;
+  --border: #262626;
+  --muted: #737373;
+  --dim: #525252;
+  --text: #e5e5e5;
+  --accent: #ff7a18;
+  --mono: ui-monospace, "SF Mono", "IBM Plex Mono", Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  background-image: radial-gradient(circle at 20% 0%, rgba(255, 122, 24, 0.07), transparent 55%);
+  color: var(--text);
+  font-family: var(--mono);
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 40px 24px;
+}
+.shell {
+  width: 100%;
+  max-width: 760px;
+}
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.head h1 {
+  font-size: 48px;
+  line-height: 1;
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.tag {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--dim);
+  padding-bottom: 8px;
+}
+.lede {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 8px 0 32px;
+  max-width: 60ch;
+}
+code {
+  color: var(--accent);
+}
+
+.track {
+  position: relative;
+  height: 112px;
+  border-radius: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.track-line {
+  position: absolute;
+  top: 50%;
+  left: 28px;
+  right: 28px;
+  height: 2px;
+  background: var(--border);
+}
+.ghost {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+}
+.dot {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 0 28px rgba(255, 122, 24, 0.4);
+}
+.dot span {
+  font-size: 9px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.readout {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 24px 0 32px;
+}
+.cell {
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 12px;
+}
+.cell-k {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--dim);
+  min-height: 12px;
+  margin-bottom: 4px;
+}
+.cell-v {
+  font-size: 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.modes {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.mode {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 6px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.mode.active {
+  background: var(--accent);
+  color: #0a0a0a;
+}
+
+.slider {
+  margin-bottom: 20px;
+}
+.slider-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.slider-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+.slider-value {
+  font-size: 13px;
+  color: var(--text);
+}
+.slider input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+.preset {
+  border: 1px solid #404040;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.preset:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.canvas {
+  width: 100%;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+}
+.hint {
+  color: var(--dim);
+  font-size: 12px;
+}
+
+.usespring {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin-top: 32px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+}
+.usespring-rail {
+  position: relative;
+  flex: none;
+  width: 260px;
+  height: 36px;
+  border-radius: 18px;
+  background: #0a0a0a;
+  border: 1px solid var(--border);
+}
+.usespring-dot {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  margin-top: -13px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--accent), #c4490a);
+}

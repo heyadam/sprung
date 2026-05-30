@@ -86,6 +86,7 @@
     "@arethetypeswrong/cli": "^0.18.3",
     "@biomejs/biome": "^2.4.16",
     "@changesets/cli": "^2.31.0",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^25.9.1",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
