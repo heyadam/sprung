@@ -71,16 +71,20 @@ describe("useSpring", () => {
     expect(read(container)).toBe(250); // snapped, not animated
   });
 
-  it("does not update after unmount", () => {
-    const { container, rerender, unmount } = render(
+  it("stops the animation loop on unmount (no rAF leak)", () => {
+    const { rerender, unmount } = render(
       <Probe target={0} config={{ stiffness: 120, damping: 8 }} />,
     );
-    rerender(<Probe target={100} config={{ stiffness: 120, damping: 8 }} />);
-    act(() => vi.advanceTimersByTime(30)); // start moving
-    const beforeUnmount = read(container);
+    rerender(<Probe target={1000} config={{ stiffness: 120, damping: 8 }} />); // long, still in-flight
+    act(() => vi.advanceTimersByTime(50)); // mid-animation; a frame is scheduled
+
+    const rafSpy = vi.spyOn(globalThis, "requestAnimationFrame");
     unmount();
-    // advancing after unmount must not error or keep animating
-    expect(() => act(() => vi.advanceTimersByTime(2000))).not.toThrow();
-    expect(beforeUnmount).toBeGreaterThanOrEqual(0);
+    act(() => vi.advanceTimersByTime(2000));
+
+    // After cleanup the controller must schedule no further frames. Without the unmount
+    // cleanup, the in-flight frame fires and reschedules — which this spy would catch.
+    expect(rafSpy).not.toHaveBeenCalled();
+    rafSpy.mockRestore();
   });
 });

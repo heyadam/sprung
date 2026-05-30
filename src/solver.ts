@@ -25,6 +25,27 @@ export function createSpring(config: SpringConfig = {}): Spring {
     restVelocity = 0.05,
   } = config;
 
+  // Validate once, off the per-sample hot path: degenerate physics would otherwise
+  // silently yield a NaN or divergent trajectory.
+  if (
+    !(
+      Number.isFinite(stiffness) &&
+      Number.isFinite(damping) &&
+      Number.isFinite(mass) &&
+      Number.isFinite(from) &&
+      Number.isFinite(to) &&
+      Number.isFinite(velocity) &&
+      Number.isFinite(restDistance) &&
+      Number.isFinite(restVelocity)
+    )
+  ) {
+    throw new RangeError("createSpring: all numeric options must be finite numbers");
+  }
+  if (stiffness <= 0)
+    throw new RangeError(`createSpring: stiffness must be > 0 (got ${stiffness})`);
+  if (mass <= 0) throw new RangeError(`createSpring: mass must be > 0 (got ${mass})`);
+  if (damping < 0) throw new RangeError(`createSpring: damping must be >= 0 (got ${damping})`);
+
   const w0 = Math.sqrt(stiffness / mass); // natural angular frequency
   const zeta = damping / (2 * Math.sqrt(stiffness * mass)); // damping ratio
   const d0 = from - to; // initial displacement from target

@@ -178,6 +178,33 @@ describe("spring() controller", () => {
     expect(isPending()).toBe(false);
   });
 
+  it("recovers from a throwing onUpdate instead of stranding the loop", () => {
+    let calls = 0;
+    const onComplete = vi.fn();
+    const { handle, frame, isPending } = harness({
+      from: 0,
+      stiffness: 300,
+      damping: 30,
+      mass: 1,
+      onComplete,
+      onUpdate: () => {
+        calls += 1;
+        if (calls === 2) throw new Error("boom");
+      },
+    });
+
+    handle.set(100);
+    frame(); // frame 1
+    // frame 2's onUpdate throws — but the next frame is scheduled *before* the callback
+    // runs, so the loop survives (mirrors how rAF isolates each callback in the browser).
+    expect(() => frame()).toThrow("boom");
+    expect(isPending()).toBe(true);
+
+    for (let i = 0; i < 2000 && isPending(); i++) frame();
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(handle.get().value).toBeCloseTo(100, 4);
+  });
+
   it("drives to completion with the default scheduler in a non-DOM env (timer fallback)", () => {
     vi.useFakeTimers();
     try {

@@ -26,7 +26,7 @@ function Box({ open }: { open: boolean }) {
 }
 ```
 
-`useSpring` re-renders with the live value each frame and **retargets velocity-continuously** when `target` changes. It returns `target` on the server, honors `prefers-reduced-motion` (snaps instead of animating), and is StrictMode/concurrent-safe.
+`useSpring` re-renders with the live value each frame and **retargets velocity-continuously** when `target` changes. It returns `target` on the server, honors `prefers-reduced-motion` by snapping instead of animating (evaluated at each retarget, not tracked live), and is StrictMode/concurrent-safe. `config` is read once on mount.
 
 ### Vanilla / any framework
 
@@ -51,6 +51,7 @@ el.addEventListener("click", () => handle.set(300));
 import { fromFeel, spring } from "sprung";
 
 // bounce ∈ [-1, 1]:  >0 bouncy · 0 critical (no overshoot) · <0 sluggish
+// (the extremes are clamped to a settling range, so ±1 stay usable, not degenerate)
 const handle = spring({ ...fromFeel({ duration: 0.5, bounce: 0.3 }), onUpdate });
 ```
 

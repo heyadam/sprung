@@ -18,11 +18,12 @@ function prefersReducedMotion(): boolean {
  * when `target` changes — no jump mid-flight. The value starts *at* `target` on
  * mount (no entrance animation); pass a distinct feel via `config`.
  *
- * SSR-safe (returns `target` on the server, touches no DOM at import) and honors
- * `prefers-reduced-motion` by snapping instead of animating. `config` is read
- * once, when the controller is created.
+ * SSR-safe (returns `target` on the server, touches no DOM at import). Honors
+ * `prefers-reduced-motion` by snapping instead of animating — the preference is
+ * evaluated at each retarget, not tracked live. `config` is read once, when the
+ * controller is created (changing it across renders is a no-op).
  */
-export function useSpring(target: number, config?: SpringConfig): number {
+export function useSpring(target: number, config?: Omit<SpringConfig, "to">): number {
   const [value, setValue] = useState(target);
   const handleRef = useRef<SpringHandle | null>(null);
   const prevTargetRef = useRef(target);

@@ -39,7 +39,9 @@ export interface Spring {
 }
 
 /** Configuration for the live `spring()` controller. */
-export interface SpringControllerConfig extends SpringConfig {
+// `to` is intentionally omitted: the controller starts at rest at `from` and
+// animates only via `set(target)`, so accepting a `to` here would be a no-op.
+export interface SpringControllerConfig extends Omit<SpringConfig, "to"> {
   /** Called every frame with the current value and velocity. */
   onUpdate: (value: number, velocity: number) => void;
   /** Called once when the spring settles. */
@@ -66,7 +68,11 @@ export interface SpringHandle {
 export interface FeelOptions {
   /** Perceptual duration in seconds. Default 0.5. */
   duration?: number;
-  /** Bounciness in [-1, 1]: >0 bouncy, 0 critical, <0 sluggish. Default 0.2. */
+  /**
+   * Bounciness, nominally in [-1, 1]: >0 bouncy, 0 critical, <0 sluggish. Default 0.2.
+   * The extremes are clamped to a settling range (the damping ratio is kept finite and
+   * strictly positive), so values at/near ±1 stay usable rather than degenerate.
+   */
   bounce?: number;
   /** Mass. Default 1. */
   mass?: number;

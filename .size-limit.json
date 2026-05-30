@@ -11,9 +11,9 @@
     "limit": "1 kB"
   },
   {
-    "name": "react adapter (useSpring)",
+    "name": "react adapter (useSpring; bundles the engine)",
     "path": "dist/react.js",
     "import": "{ useSpring }",
-    "limit": "1 kB"
+    "limit": "1.5 kB"
   }
 ]

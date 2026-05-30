@@ -82,16 +82,20 @@ export function spring(config: SpringControllerConfig): SpringHandle {
     const s = active.at((now() - startTime) / 1000);
     value = s.value;
     velocity = s.velocity;
+    // Terminal when settled, or if the trajectory went non-finite (degenerate
+    // physics) — never spin the loop forever on NaN/Infinity.
+    const finished = s.done || !Number.isFinite(s.value) || !Number.isFinite(s.velocity);
+    // Schedule the next frame BEFORE calling onUpdate, so a throwing callback can't
+    // strand the controller running-but-unscheduled (a silent zombie).
+    if (!finished) frame = raf(tick);
     onUpdate(value, velocity);
-    // If onUpdate re-entered (called set/stop), don't clobber its scheduling.
+    // If onUpdate re-entered (called set/stop), it now owns scheduling — don't touch.
     if (solver !== active || !running) return;
-    if (s.done) {
+    if (finished) {
       running = false;
       solver = null;
       onComplete?.();
-      return;
     }
-    frame = raf(tick);
   }
 
   function set(target: number): void {

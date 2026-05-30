@@ -46,6 +46,12 @@ expectTypeOf<FeelOptions>().toEqualTypeOf<{ duration?: number; bounce?: number; 
 expectTypeOf(presets).toMatchTypeOf<Record<string, SpringConfig>>();
 
 // useSpring — (target, config?) => number.
-expectTypeOf(useSpring).toEqualTypeOf<(target: number, config?: SpringConfig) => number>();
+expectTypeOf(useSpring).toEqualTypeOf<
+  (target: number, config?: Omit<SpringConfig, "to">) => number
+>();
 expectTypeOf(useSpring).returns.toBeNumber();
-expectTypeOf(useSpring).parameter(1).toEqualTypeOf<SpringConfig | undefined>();
+expectTypeOf(useSpring).parameter(1).toEqualTypeOf<Omit<SpringConfig, "to"> | undefined>();
+
+// spring() must reject `to` (it is ignored at runtime; the type makes that a compile error).
+// @ts-expect-error — `to` is not a valid controller option
+spring({ to: 100, onUpdate: () => {} });
