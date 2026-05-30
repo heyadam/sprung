@@ -1,0 +1,19 @@
+[
+  {
+    "name": "core (createSpring + spring + fromFeel + presets)",
+    "path": "dist/index.js",
+    "limit": "2 kB"
+  },
+  {
+    "name": "core, tree-shaken to createSpring only",
+    "path": "dist/index.js",
+    "import": "{ createSpring }",
+    "limit": "1 kB"
+  },
+  {
+    "name": "react adapter (useSpring)",
+    "path": "dist/react.js",
+    "import": "{ useSpring }",
+    "limit": "1 kB"
+  }
+]

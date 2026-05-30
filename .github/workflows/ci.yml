@@ -24,7 +24,11 @@ jobs:
         run: npm run typecheck
       - name: Test
         run: npm run test
+      - name: Type-level tests
+        run: npm run test:types
       - name: Build
         run: npm run build
       - name: Validate package (publint + attw)
         run: npm run check:package
+      - name: Size budget
+        run: npm run size
