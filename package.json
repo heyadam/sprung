@@ -1,6 +1,6 @@
 {
   "name": "sprungdesign",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Tiny, framework-agnostic physics spring animation — a closed-form damped harmonic oscillator with velocity-continuous interruption.",
   "type": "module",
   "sideEffects": false,
