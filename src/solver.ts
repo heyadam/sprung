@@ -1,7 +1,5 @@
 import type { Spring, SpringConfig, SpringState } from "./types";
 
-type Solved = { x: number; v: number };
-
 /**
  * Solve the damped harmonic oscillator in closed form.
  *
@@ -51,29 +49,38 @@ export function createSpring(config: SpringConfig = {}): Spring {
   const d0 = from - to; // initial displacement from target
   const v0 = velocity;
 
-  let solve: (t: number) => Solved;
+  function state(x: number, v: number): SpringState {
+    const done = Math.abs(x - to) < restDistance && Math.abs(v) < restVelocity;
+    return { value: done ? to : x, velocity: done ? 0 : v, done };
+  }
+
+  let at: (t: number) => SpringState;
 
   if (zeta < 1) {
     // underdamped — the bouncy regime
     const wd = w0 * Math.sqrt(1 - zeta * zeta); // damped frequency
     const a = zeta * w0;
     const c2 = (v0 + a * d0) / wd;
-    solve = (t) => {
+    const vCos = -a * d0 + c2 * wd;
+    const vSin = -a * c2 - d0 * wd;
+    at = (t) => {
       const e = Math.exp(-a * t);
-      const cos = Math.cos(wd * t);
-      const sin = Math.sin(wd * t);
+      const angle = wd * t;
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
       const x = to + e * (d0 * cos + c2 * sin);
-      const v = e * ((-a * d0 + c2 * wd) * cos + (-a * c2 - d0 * wd) * sin);
-      return { x, v };
+      const v = e * (vCos * cos + vSin * sin);
+      return state(x, v);
     };
   } else if (zeta === 1) {
     // critically damped — fastest settle, no overshoot
-    solve = (t) => {
+    const k = v0 + w0 * d0;
+    at = (t) => {
       const e = Math.exp(-w0 * t);
-      const k = v0 + w0 * d0;
-      const x = to + e * (d0 + k * t);
-      const v = e * (k - w0 * (d0 + k * t));
-      return { x, v };
+      const offset = d0 + k * t;
+      const x = to + e * offset;
+      const v = e * (k - w0 * offset);
+      return state(x, v);
     };
   } else {
     // overdamped — slow, no overshoot
@@ -82,22 +89,18 @@ export function createSpring(config: SpringConfig = {}): Spring {
     const r2 = -zeta * w0 - s;
     const c1 = (v0 - r2 * d0) / (r1 - r2);
     const cc2 = d0 - c1;
-    solve = (t) => {
+    at = (t) => {
       const e1 = Math.exp(r1 * t);
       const e2 = Math.exp(r2 * t);
       const x = to + c1 * e1 + cc2 * e2;
       const v = c1 * r1 * e1 + cc2 * r2 * e2;
-      return { x, v };
+      return state(x, v);
     };
   }
 
   return {
     zeta,
     w0,
-    at(t: number): SpringState {
-      const { x, v } = solve(t);
-      const done = Math.abs(x - to) < restDistance && Math.abs(v) < restVelocity;
-      return { value: done ? to : x, velocity: done ? 0 : v, done };
-    },
+    at,
   };
 }
