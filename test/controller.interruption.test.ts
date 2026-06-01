@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { spring } from "../src/controller";
-import type { SpringControllerConfig } from "../src/types";
+import type { SpringControllerConfig, SpringHandle } from "../src/types";
 
 /**
  * GATE 2 — interruption continuity.
@@ -176,6 +176,101 @@ describe("spring() controller", () => {
     handle.set(50);
     runToRest();
     expect(isPending()).toBe(false);
+  });
+
+  it("reuses a pending frame across repeated retargets", () => {
+    let clock = 0;
+    let pending: ((time: number) => void) | null = null;
+    let rafCalls = 0;
+    let cafCalls = 0;
+    const updates: { value: number; velocity: number }[] = [];
+    function frame(dtMs = 16): void {
+      clock += dtMs;
+      const cb = pending;
+      pending = null;
+      if (!cb) throw new Error("expected a pending frame");
+      cb(clock);
+    }
+    const handle = spring({
+      from: 0,
+      stiffness: 180,
+      damping: 12,
+      mass: 1,
+      now: () => clock,
+      raf: (cb) => {
+        pending = cb;
+        return ++rafCalls;
+      },
+      caf: () => {
+        cafCalls++;
+        pending = null;
+      },
+      onUpdate: (value, velocity) => updates.push({ value, velocity }),
+    });
+
+    handle.set(100);
+    handle.set(200);
+    handle.set(-50);
+
+    expect(rafCalls).toBe(1);
+    expect(cafCalls).toBe(0);
+
+    frame();
+    expect(rafCalls).toBe(2);
+
+    expect(updates[0]?.value).toBeLessThan(0);
+    expect(updates[0]?.velocity).toBeLessThan(0);
+
+    for (let i = 0; i < 1000 && pending; i++) frame();
+    expect(handle.get().value).toBeCloseTo(-50, 4);
+    expect(handle.get().velocity).toBe(0);
+  });
+
+  it("lets a re-entrant set() from onUpdate reuse the scheduled next frame", () => {
+    let clock = 0;
+    let pending: ((time: number) => void) | null = null;
+    let rafCalls = 0;
+    let cafCalls = 0;
+    const updates: { value: number; velocity: number }[] = [];
+    function frame(dtMs = 16): void {
+      clock += dtMs;
+      const cb = pending;
+      pending = null;
+      if (!cb) throw new Error("expected a pending frame");
+      cb(clock);
+    }
+
+    let handle: SpringHandle;
+    handle = spring({
+      from: 0,
+      stiffness: 180,
+      damping: 12,
+      mass: 1,
+      now: () => clock,
+      raf: (cb) => {
+        pending = cb;
+        return ++rafCalls;
+      },
+      caf: () => {
+        cafCalls++;
+        pending = null;
+      },
+      onUpdate: (value, velocity) => {
+        updates.push({ value, velocity });
+        if (updates.length === 1) handle.set(-50);
+      },
+    });
+
+    handle.set(100);
+    frame();
+
+    expect(updates[0]?.value).toBeGreaterThan(0);
+    expect(rafCalls).toBe(2);
+    expect(cafCalls).toBe(0);
+
+    for (let i = 0; i < 1000 && pending; i++) frame();
+    expect(handle.get().value).toBeCloseTo(-50, 4);
+    expect(handle.get().velocity).toBe(0);
   });
 
   it("recovers from a throwing onUpdate instead of stranding the loop", () => {

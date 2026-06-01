@@ -64,11 +64,16 @@ export function spring(config: SpringControllerConfig): SpringHandle {
 
   // Current value/velocity — sampled live from the solver while running so that
   // interruptions and reads are exact even between frames.
-  function sample(): { value: number; velocity: number } {
+  function sync(): void {
     if (running && solver) {
       const s = solver.at(elapsed());
-      return { value: s.value, velocity: s.velocity };
+      value = s.value;
+      velocity = s.velocity;
     }
+  }
+
+  function sample(): { value: number; velocity: number } {
+    sync();
     return { value, velocity };
   }
 
@@ -77,6 +82,10 @@ export function spring(config: SpringControllerConfig): SpringHandle {
       caf(frame);
       frame = null;
     }
+  }
+
+  function ensureFrame(): void {
+    if (frame === null) frame = raf(tick);
   }
 
   function tick(): void {
@@ -103,20 +112,15 @@ export function spring(config: SpringControllerConfig): SpringHandle {
   }
 
   function set(target: number): void {
-    const current = sample();
-    value = current.value;
-    velocity = current.velocity;
+    sync();
     solver = createSpring({ ...physics, from: value, velocity, to: target });
     startTime = now();
     running = true;
-    cancelFrame();
-    frame = raf(tick);
+    ensureFrame();
   }
 
   function stop(): void {
-    const current = sample();
-    value = current.value;
-    velocity = current.velocity;
+    sync();
     running = false;
     solver = null;
     cancelFrame();
